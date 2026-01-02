@@ -24,35 +24,48 @@
 }
 </script>
 </head>
-<body class="bg-[#020617] text-slate-100 overflow-x-hidden">
+<body class="bg-[#020617] text-slate-100">
 
+    <!-- TOP AD BAR: Static, scrolls with page, does NOT overlap dashboard -->
+    <div id="top-ad-zone" class="w-full flex flex-col items-center bg-slate-900/30 border-b border-white/5 py-2">
+        <span class="text-[8px] font-black text-slate-600 tracking-[0.3em] uppercase mb-1">Network Node Sponsor</span>
+        <div class="ad-container overflow-hidden min-h-[50px]">
+            <script type="text/javascript">
+                atOptions = { 'key' : '8b1e3d61861d1c17368c4fd4e1eecf52', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/8b1e3d61861d1c17368c4fd4e1eecf52/invoke.js"></script>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION -->
     <div id="root"></div>
 
-    <!-- Consolidated Bottom Ad Gallery - Dedicated Space for Larger Units -->
-    <section class="w-full bg-slate-950 border-t border-slate-800/50 py-10 px-6 mt-10">
+    <!-- BOTTOM AD GALLERY: Dedicated flexible space below all site content -->
+    <section id="bottom-ad-zone" class="w-full bg-slate-950 border-t border-slate-800/50 py-16 px-6 mt-12 pb-24">
         <div class="max-w-[1400px] mx-auto">
-            <h2 class="text-xs font-black text-slate-700 tracking-[0.5em] uppercase mb-10 text-center">Network Sponsors</h2>
-            <div class="flex flex-wrap justify-center items-center gap-8">
+            <h2 class="text-[10px] font-black text-slate-700 tracking-[0.5em] uppercase mb-12 text-center">Global Sponsors & Advertisers</h2>
+            
+            <div class="flex flex-wrap justify-center items-center gap-10">
                 <!-- 160x600 Rails -->
-                <div class="ad-container border border-slate-800 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
+                <div class="ad-container border border-white/5 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
                     <script type="text/javascript">
                         atOptions = { 'key' : '3786c373fb067d1092814cd741ef7d0d', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
                     </script>
                     <script type="text/javascript" src="https://www.highperformanceformat.com/3786c373fb067d1092814cd741ef7d0d/invoke.js"></script>
                 </div>
 
-                <div class="flex flex-col items-center gap-8">
+                <div class="flex flex-col items-center gap-10">
                     <!-- 728x90 Banner -->
-                    <div class="ad-container border border-slate-800 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
+                    <div class="ad-container border border-white/5 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
                         <script type="text/javascript">
                             atOptions = { 'key' : 'ca62188f74ef0038211200819287107d', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
                         </script>
                         <script type="text/javascript" src="https://www.highperformanceformat.com/ca62188f74ef0038211200819287107d/invoke.js"></script>
                     </div>
                     
-                    <div class="flex flex-wrap justify-center gap-8">
+                    <div class="flex flex-wrap justify-center gap-10">
                          <!-- 300x250 Banner -->
-                        <div class="ad-container border border-slate-800 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
+                        <div class="ad-container border border-white/5 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
                             <script type="text/javascript">
                                 atOptions = { 'key' : '4f52a4b1f5dba3d1b6bf80d44634631d', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
                             </script>
@@ -60,25 +73,17 @@
                         </div>
                         
                         <!-- 468x60 Banner -->
-                        <div class="ad-container border border-slate-800 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
+                        <div class="ad-container border border-white/5 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
                             <script type="text/javascript">
                                 atOptions = { 'key' : 'c992751dba51ea4600c3e3b94c90b0af', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} };
                             </script>
                             <script type="text/javascript" src="https://www.highperformanceformat.com/c992751dba51ea4600c3e3b94c90b0af/invoke.js"></script>
                         </div>
-
-                        <!-- 320x50 Banner (Moved from Top) -->
-                        <div class="ad-container border border-slate-800 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
-                            <script type="text/javascript">
-                                atOptions = { 'key' : '8b1e3d61861d1c17368c4fd4e1eecf52', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
-                            </script>
-                            <script type="text/javascript" src="https://www.highperformanceformat.com/8b1e3d61861d1c17368c4fd4e1eecf52/invoke.js"></script>
-                        </div>
                     </div>
                 </div>
 
                 <!-- 160x600 Rail -->
-                <div class="ad-container border border-slate-800 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
+                <div class="ad-container border border-white/5 bg-slate-900/50 rounded-xl overflow-hidden shadow-2xl">
                     <script type="text/javascript">
                         atOptions = { 'key' : '3786c373fb067d1092814cd741ef7d0d', 'format' : 'iframe', 'height' : 600, 'width' : 160, 'params' : {} };
                     </script>
@@ -88,7 +93,7 @@
         </div>
     </section>
 
-    <!-- Adsterra Social Bar -->
+    <!-- Adsterra Social Bar: Floats safely at bottom, does not hide interactive elements -->
     <script type='text/javascript' src='//pl28380256.effectivegatecpm.com/f6/1a/42/f61a4274586f36ba796ad9362c93a165.js'></script>
     
     <!-- Core Application -->

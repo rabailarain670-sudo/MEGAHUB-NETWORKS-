@@ -150,8 +150,9 @@ const App = () => {
   const [room, setRoom] = useState<Room | null>(null);
   const [season, setSeason] = useState('stars');
   const [diagnostics, setDiagnostics] = useState<{ name: string; status: 'ok' | 'fail' | 'pending' }[]>([]);
+  const [headerTop, setHeaderTop] = useState(0);
 
-  // 1. Sync State
+  // Sync state with global logic
   useEffect(() => {
     const sync = () => {
       const s = (window as any).MegaHub?.state;
@@ -161,10 +162,14 @@ const App = () => {
       }
     };
     const i = setInterval(sync, 1000);
+
+    // Dynamic header position adjustment based on top ad presence
+    const topAd = document.getElementById('top-ad-zone');
+    if (topAd) setHeaderTop(topAd.offsetHeight);
+
     return () => clearInterval(i);
   }, []);
 
-  // 2. Diagnostics Module
   const runDiagnostics = () => {
     const tests = ['UI_CORE', 'MULT_ENGINE', 'ADS_SYNC', 'ECON_SYNC', 'SND_BUS'];
     setDiagnostics(tests.map(t => ({ name: t, status: 'pending' })));
@@ -176,7 +181,6 @@ const App = () => {
     });
   };
 
-  // 3. Room Matchmaking
   const joinQuick = () => {
     (window as any).MegaHub.notify("Node search active...");
     setTimeout(() => {
@@ -198,8 +202,11 @@ const App = () => {
     <div className="app-shell">
       <WeatherSystem type={season} />
       
-      {/* GLOBAL HEADER */}
-      <header className="fixed top-0 w-full z-[1000] glass px-6 h-[72px] flex justify-between items-center">
+      {/* GLOBAL HEADER - Positioned relatively if top ad is active, or fixed at top */}
+      <header 
+        className="fixed left-0 w-full z-[1000] glass px-6 h-[72px] flex justify-between items-center transition-all duration-300"
+        style={{ top: `${headerTop}px` }}
+      >
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('dashboard'); setRoom(null); }}>
           <div className="p-1.5 bg-blue-500 rounded-lg shadow-lg shadow-blue-500/30"><Zap size={20} fill="white" stroke="white" /></div>
           <span className="megahub-branding text-2xl font-black tracking-tighter">MEGAHUB</span>
@@ -216,7 +223,6 @@ const App = () => {
       </header>
 
       <div className="content-wrapper">
-        {/* MAIN BODY */}
         <main className="main-content">
           <AnimatePresence mode="wait">
             {view === 'dashboard' && (
