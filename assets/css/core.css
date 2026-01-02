@@ -13,7 +13,7 @@
   --text-light: #0f172a;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -21,30 +21,32 @@ body {
   color: var(--text-dark);
   line-height: 1.5;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Layer Management */
+/* Fix Application Visibility */
 #root {
-  display: block;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
   width: 100%;
   min-height: 100vh;
   position: relative;
-  z-index: 50; /* Ensure app is above ads */
+  z-index: 100; /* Dominant layer */
 }
 
 .app-shell {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  width: 100%;
 }
 
 .content-wrapper {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-top: 80px; /* Header Offset */
-  padding-bottom: 100px; /* Bottom Nav Offset */
+  padding-top: 80px; 
+  padding-bottom: 120px; 
 }
 
 .main-content {
@@ -52,15 +54,17 @@ body {
   max-width: 1100px;
   padding: 20px;
   min-width: 0;
+  position: relative;
+  z-index: 110;
 }
 
-/* UI Components */
+/* UI Elements */
 .glass {
   background: var(--glass);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 .megahub-branding {
@@ -68,7 +72,7 @@ body {
   background: linear-gradient(135deg, #3b82f6, #22d3ee, #a855f7);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
+  filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.3));
 }
 
 .btn {
@@ -83,9 +87,12 @@ body {
   gap: 8px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
+.btn:active { transform: scale(0.95); }
+
+.btn-primary { background: var(--primary); color: white; }
 .btn-secondary { background: var(--secondary); color: white; }
 .btn-accent { background: var(--accent); color: #020617; }
 
@@ -96,30 +103,27 @@ body {
 
 @keyframes pulse-glow {
   0% { filter: drop-shadow(0 0 5px var(--primary-glow)); }
-  50% { filter: drop-shadow(0 0 20px var(--primary-glow)); }
+  50% { filter: drop-shadow(0 0 15px var(--primary-glow)); }
   100% { filter: drop-shadow(0 0 5px var(--primary-glow)); }
 }
 
 .glow-animate { animation: pulse-glow 3s infinite ease-in-out; }
 
-/* Ad Rail Placement */
+/* Ad Containers - Subordinate Layer */
+.ad-container {
+    position: relative;
+    z-index: 1; /* Lowest layer */
+}
+
 .ad-rail-desktop {
   position: fixed;
   top: 100px;
   width: 160px;
   height: 600px;
-  z-index: 10;
+  z-index: 5;
   display: none;
 }
 
-.left-rail { left: 20px; }
-.right-rail { right: 20px; }
-
 @media (min-width: 1500px) {
   .ad-rail-desktop { display: block; }
-}
-
-.ad-container {
-    position: relative;
-    z-index: 1;
 }

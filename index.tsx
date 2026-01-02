@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -55,11 +55,11 @@ const WeatherSystem = ({ type }: { type: string }) => {
     resize();
     const create = () => {
       if (type === 'stars') return { x: Math.random() * canvas.width, y: Math.random() * canvas.height, s: Math.random() * 1.5, o: Math.random(), v: Math.random() * 0.01 };
-      if (type === 'rain') return { x: Math.random() * canvas.width, y: -20, l: Math.random() * 15 + 10, v: Math.random() * 8 + 10 };
+      if (type === 'rain') return { x: Math.random() * canvas.width, y: -20, l: Math.random() * 15 + 10, v: Math.random() * 5 + 10 };
       if (type === 'snow') return { x: Math.random() * canvas.width, y: -20, r: Math.random() * 3 + 1, v: Math.random() * 1 + 0.5, o: Math.random() * 10 };
       return {};
     };
-    for (let i = 0; i < 80; i++) particles.push(create());
+    for (let i = 0; i < 60; i++) particles.push(create());
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p, i) => {
@@ -72,7 +72,7 @@ const WeatherSystem = ({ type }: { type: string }) => {
     draw();
     return () => { cancelAnimationFrame(animationId); window.removeEventListener('resize', resize); };
   }, [type]);
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.3 }} />;
+  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" style={{ opacity: 0.2 }} />;
 };
 
 // --- GAME: SKRIBBL ENGINE ---
@@ -117,7 +117,7 @@ const SkribblEngine = ({ room, onWin }: { room: Room, onWin: (c: number) => void
         </div>
         <div className="flex gap-2">
           {['#fff', '#3b82f6', '#ef4444', '#fbbf24'].map(c => (
-            <button key={c} onClick={() => setColor(c)} className="w-6 h-6 rounded-full border border-white/20" style={{background: c}} />
+            <button key={c} onClick={() => setColor(c)} className="w-6 h-6 rounded-full border border-white/20 transition-transform active:scale-90" style={{background: c}} />
           ))}
         </div>
       </div>
@@ -151,31 +151,40 @@ const App = () => {
   const [season, setSeason] = useState('stars');
   const [diagnostics, setDiagnostics] = useState<{ name: string; status: 'ok' | 'fail' | 'pending' }[]>([]);
 
-  // Dismiss loader once React takes over
+  // Safety Loader Removal
   useEffect(() => {
-    const loader = document.getElementById('system-loader');
-    if (loader) {
-      loader.style.opacity = '0';
-      setTimeout(() => loader.remove(), 500);
-    }
+    const hideLoader = () => {
+      const loader = document.getElementById('system-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 500);
+      }
+    };
+    
+    // Attempt immediate removal
+    hideLoader();
+    // Safety backup
+    const t = setTimeout(hideLoader, 3000);
+    return () => clearTimeout(t);
   }, []);
 
-  // Sync state with global logic
+  // State Sync
   useEffect(() => {
     const sync = () => {
       const s = (window as any).MegaHub?.state;
       if (s) {
         setUser({ 
-          name: s.nickname, 
-          coins: s.coins, 
-          xp: s.xp, 
-          level: Math.floor(s.xp / 1000) + 1, 
+          name: s.nickname || 'Guest', 
+          coins: s.coins || 0, 
+          xp: s.xp || 0, 
+          level: Math.floor((s.xp || 0) / 1000) + 1, 
           inventory: s.inventory || [], 
           equipped: s.equipped || {} 
         });
         setSeason(s.settings?.season || 'stars');
       }
     };
+    sync(); // Run once immediately
     const i = setInterval(sync, 1000);
     return () => clearInterval(i);
   }, []);
@@ -192,7 +201,7 @@ const App = () => {
   };
 
   const joinQuick = () => {
-    (window as any).MegaHub?.notify("Node search active...");
+    (window as any).MegaHub?.notify("Searching for active nodes...");
     setTimeout(() => {
       setRoom({
         id: 'NODE-' + Math.random().toString(36).substring(2, 6).toUpperCase(),
@@ -209,12 +218,11 @@ const App = () => {
   };
 
   return (
-    <div className="app-shell relative z-[1000]">
+    <div className="app-shell relative z-[100]">
       <WeatherSystem type={season} />
       
-      {/* GLOBAL HEADER */}
-      <header className="fixed top-0 w-full z-[2000] glass px-6 h-[72px] flex justify-between items-center">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('dashboard'); setRoom(null); }}>
+      <header className="fixed top-0 w-full z-[1000] glass px-6 h-[72px] flex justify-between items-center">
+        <div className="flex items-center gap-2 cursor-pointer transition-transform active:scale-95" onClick={() => { setView('dashboard'); setRoom(null); }}>
           <div className="p-1.5 bg-blue-500 rounded-lg shadow-lg shadow-blue-500/30"><Zap size={20} fill="white" stroke="white" /></div>
           <span className="megahub-branding text-2xl font-black tracking-tighter">MEGAHUB</span>
         </div>
@@ -222,8 +230,8 @@ const App = () => {
           <div className="glass px-4 py-1.5 rounded-full flex items-center gap-2 border-yellow-500/20 text-yellow-500 font-black">
             <Coins size={16} /> {user.coins}
           </div>
-          <div className="profile-chip glass p-1 px-4 flex items-center gap-3 cursor-pointer group" onClick={() => setView('profile')}>
-            <div className={`w-8 h-8 rounded-full bg-slate-800 avatar-container ${user.equipped?.frame ? 'equipped-' + user.equipped.frame : ''}`} />
+          <div className="profile-chip glass p-1 px-4 flex items-center gap-3 cursor-pointer group hover:bg-white/5 transition-colors" onClick={() => setView('profile')}>
+            <div className={`w-8 h-8 rounded-full bg-slate-800 avatar-container border border-white/10 ${user.equipped?.frame ? 'equipped-' + user.equipped.frame : ''}`} />
             <span className="text-sm font-black hidden sm:block group-hover:text-blue-400 transition-colors">{user.name}</span>
           </div>
         </div>
@@ -242,13 +250,13 @@ const App = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 space-y-6">
                     <div className="glass p-10 bg-gradient-to-br from-blue-600/20 to-transparent relative group overflow-hidden border-blue-500/20">
-                      <Flame className="absolute -right-8 -bottom-8 w-64 h-64 text-blue-500/10 group-hover:scale-110 transition-transform" />
+                      <Flame className="absolute -right-8 -bottom-8 w-64 h-64 text-blue-500/10 group-hover:scale-110 transition-transform duration-700" />
                       <div className="relative z-10">
                         <span className="bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-4 inline-block">System: Online</span>
                         <h2 className="text-5xl font-black mb-4">THE GLOBAL ARENA</h2>
                         <p className="text-slate-400 text-lg mb-10 max-w-lg font-medium">Multiplayer drawing, card strategy, and precision training nodes are active. Earn credits and claim your rank.</p>
                         <div className="flex flex-wrap gap-4">
-                          <button onClick={joinQuick} className="btn btn-primary px-10 py-4 text-lg">QUICK PLAY</button>
+                          <button onClick={joinQuick} className="btn btn-primary px-10 py-4 text-lg shadow-xl shadow-blue-500/20">QUICK PLAY</button>
                           <button onClick={() => setView('arcade')} className="btn glass px-10 py-4 text-lg">ARCADE HUB</button>
                         </div>
                       </div>
@@ -256,7 +264,7 @@ const App = () => {
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {GAMES.slice(0, 4).map(g => (
-                        <div key={g.id} onClick={() => setView('arcade')} className="glass p-6 text-center hover:border-blue-500 group cursor-pointer bg-slate-900/40">
+                        <div key={g.id} onClick={() => setView('arcade')} className="glass p-6 text-center hover:border-blue-500 group cursor-pointer bg-slate-900/40 transition-all hover:translate-y-[-4px]">
                           <g.icon className={`${g.color} mx-auto mb-4 group-hover:scale-110 transition-transform`} size={32} />
                           <h4 className="font-black text-xs uppercase tracking-tighter">{g.name}</h4>
                         </div>
@@ -271,11 +279,11 @@ const App = () => {
                         {diagnostics.length > 0 ? diagnostics.map(d => (
                           <div key={d.name} className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
                             <span className="text-slate-500">{d.name}</span>
-                            {d.status === 'pending' ? <RefreshCw size={10} className="animate-spin" /> : <CheckCircle size={10} className="text-emerald-400" />}
+                            {d.status === 'pending' ? <RefreshCw size={10} className="animate-spin text-blue-400" /> : <CheckCircle size={10} className="text-emerald-400" />}
                           </div>
-                        )) : <p className="text-[10px] text-slate-700 font-bold uppercase">No diagnostics detected.</p>}
+                        )) : <p className="text-[10px] text-slate-700 font-bold uppercase">No diagnostics running.</p>}
                       </div>
-                      <button onClick={runDiagnostics} className="btn btn-accent w-full text-xs font-black">RUN DIAGNOSTICS</button>
+                      <button onClick={runDiagnostics} className="btn btn-accent w-full text-xs font-black py-3">RUN DIAGNOSTICS</button>
                     </div>
                     
                     <div className="glass p-6">
@@ -297,10 +305,10 @@ const App = () => {
             {view === 'arena' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key="arena" className="space-y-6">
                 {!room ? (
-                  <div className="py-10 text-center glass p-10 bg-slate-900/50">
-                    <Globe size={64} className="mx-auto text-blue-500 mb-6 opacity-50" />
-                    <h2 className="text-4xl font-black mb-2">ARENA LOBBY</h2>
-                    <p className="text-slate-500 font-black mb-10">SEARCHING FOR ACTIVE NODES...</p>
+                  <div className="py-20 text-center glass p-10 bg-slate-900/50">
+                    <Globe size={64} className="mx-auto text-blue-500 mb-6 opacity-50 animate-pulse" />
+                    <h2 className="text-4xl font-black mb-2 uppercase tracking-tighter">Arena Lobby</h2>
+                    <p className="text-slate-500 font-black mb-10 tracking-[0.3em] uppercase text-xs">Connecting to Network Hub...</p>
                     <button onClick={joinQuick} className="btn btn-primary px-12 py-4">RE-SCAN NETWORK</button>
                   </div>
                 ) : (
@@ -308,12 +316,12 @@ const App = () => {
                     <div className="lg:col-span-3 space-y-4">
                       <div className="glass p-4 flex justify-between items-center border-b border-blue-500/20">
                         <div className="flex items-center gap-3">
-                          <button onClick={() => setRoom(null)} className="p-2 glass"><LogOut size={18} className="rotate-180" /></button>
+                          <button onClick={() => setRoom(null)} className="p-2 glass hover:bg-white/5 transition-colors"><LogOut size={18} className="rotate-180" /></button>
                           <h2 className="text-xl font-black tracking-tighter uppercase">{room.name}</h2>
                         </div>
                         <div className="flex gap-2">
                           <span className="glass px-4 py-2 text-xs font-mono text-blue-400">NODE ID: {room.id}</span>
-                          <button onClick={() => (window as any).MegaHub?.notify("Link Copied")} className="btn btn-secondary p-2 px-4"><Share2 size={16} /></button>
+                          <button onClick={() => (window as any).MegaHub?.notify("Link Copied")} className="btn btn-secondary p-2 px-4 transition-colors"><Share2 size={16} /></button>
                         </div>
                       </div>
                       <div className="glass p-1 border-slate-800 bg-black/40 overflow-hidden">
@@ -321,21 +329,22 @@ const App = () => {
                       </div>
                     </div>
                     <aside className="space-y-6">
-                      <div className="glass p-4 h-[350px] flex flex-col">
+                      <div className="glass p-4 h-[400px] flex flex-col">
                         <h3 className="text-xs font-black text-slate-500 uppercase mb-4 tracking-widest">Chat Stream</h3>
                         <div className="flex-1 overflow-y-auto pr-2 space-y-2 mb-4 custom-scrollbar">
                           <div className="p-2 bg-slate-800/50 rounded-lg text-xs font-bold text-slate-300">Welcome to Node {room.id}</div>
-                          <div className="p-2 bg-slate-800/50 rounded-lg text-xs font-bold text-slate-300">System: Drawer rotating in 45s</div>
+                          <div className="p-2 bg-slate-800/50 rounded-lg text-xs font-bold text-slate-300">System: Encryption active</div>
+                          <div className="p-2 bg-slate-800/50 rounded-lg text-xs font-bold text-slate-300">Nero_Bot: I'm ready.</div>
                         </div>
                         <div className="flex gap-2">
-                          <input type="text" className="flex-1 glass p-2 text-xs outline-none" placeholder="Guess word..." />
-                          <button className="btn btn-primary p-2"><Send size={14} /></button>
+                          <input type="text" className="flex-1 glass p-2 text-xs outline-none bg-slate-900/50" placeholder="Guess word..." />
+                          <button className="btn btn-primary p-2 px-3"><Send size={14} /></button>
                         </div>
                       </div>
                       <div className="glass p-4">
                         <h3 className="text-xs font-black text-slate-500 uppercase mb-4 tracking-widest">Operators (2/10)</h3>
                         {room.players.map(p => (
-                          <div key={p.id} className="flex items-center justify-between mb-3">
+                          <div key={p.id} className="flex items-center justify-between mb-3 last:mb-0">
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700" />
                               <span className="text-xs font-black">{p.name} {p.id==='local' && '(YOU)'}</span>
@@ -352,12 +361,12 @@ const App = () => {
 
             {view === 'shop' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="shop">
-                <div className="flex justify-between items-end mb-10">
+                <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                   <div>
-                    <h1 className="text-5xl font-black mb-2">VIRTUAL MARKET</h1>
-                    <p className="text-slate-500 font-black uppercase tracking-widest">Augment Identity</p>
+                    <h1 className="text-5xl font-black mb-2 uppercase tracking-tighter">Virtual Market</h1>
+                    <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-xs">Augment Identity Systems</p>
                   </div>
-                  <div className="glass px-6 py-3 text-2xl font-black text-yellow-500 border-yellow-500/20">
+                  <div className="glass px-6 py-3 text-2xl font-black text-yellow-500 border-yellow-500/20 shadow-lg shadow-yellow-500/5">
                     🪙 {user.coins}
                   </div>
                 </div>
@@ -370,10 +379,10 @@ const App = () => {
                   ].map(item => {
                     const owned = user.inventory.includes(item.id as never);
                     return (
-                      <div key={item.id} className="glass p-6 text-center space-y-4 flex flex-col group">
-                        <div className="aspect-square bg-slate-900 rounded-2xl flex items-center justify-center relative border border-white/5 overflow-hidden">
-                          <User size={48} className="text-slate-700 group-hover:scale-110 transition-transform" />
-                          <div className="absolute inset-0" style={{ border: `3px solid ${item.color}`, opacity: 0.3 }} />
+                      <div key={item.id} className="glass p-6 text-center space-y-4 flex flex-col group hover:translate-y-[-5px] transition-transform">
+                        <div className="aspect-square bg-slate-900/50 rounded-2xl flex items-center justify-center relative border border-white/5 overflow-hidden">
+                          <User size={48} className="text-slate-700 group-hover:scale-110 transition-transform duration-500" />
+                          <div className="absolute inset-0" style={{ border: `3px solid ${item.color}`, opacity: 0.2 }} />
                         </div>
                         <h4 className="font-black text-sm uppercase tracking-tighter">{item.name}</h4>
                         <button onClick={() => (window as any).Shop?.handleAction(item.id)} className={`btn w-full text-xs font-black ${owned ? 'btn-secondary' : 'btn-primary'}`}>
@@ -388,21 +397,22 @@ const App = () => {
 
             {view === 'profile' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="profile" className="max-w-4xl mx-auto space-y-8">
-                <div className="glass p-10 flex flex-col md:flex-row items-center gap-10 bg-slate-900/40">
-                  <div className={`w-40 h-40 rounded-full bg-slate-800 flex items-center justify-center border-4 border-blue-500/30 avatar-container ${user.equipped?.frame ? 'equipped-' + user.equipped.frame : ''}`}>
+                <div className="glass p-10 flex flex-col md:flex-row items-center gap-10 bg-slate-900/40 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-4 opacity-5"><Globe size={120} /></div>
+                  <div className={`w-40 h-40 rounded-full bg-slate-800 flex items-center justify-center border-4 border-blue-500/30 avatar-container relative ${user.equipped?.frame ? 'equipped-' + user.equipped.frame : ''}`}>
                     <User size={64} className="text-slate-600" />
-                    <div className="absolute -bottom-2 -right-2 bg-yellow-500 text-black px-4 py-1 rounded-full font-black text-xs">LEVEL {user.level}</div>
+                    <div className="absolute -bottom-2 -right-2 bg-yellow-500 text-black px-4 py-1 rounded-full font-black text-[10px] shadow-lg">LEVEL {user.level}</div>
                   </div>
                   <div className="flex-1 text-center md:text-left">
-                    <h1 className="text-5xl font-black megahub-branding mb-2 uppercase">{user.name}</h1>
-                    <p className="text-slate-500 font-black uppercase tracking-[0.5em] mb-8 text-xs">Operator Status: Verified</p>
+                    <h1 className="text-5xl font-black megahub-branding mb-2 uppercase tracking-tighter">{user.name}</h1>
+                    <p className="text-slate-500 font-black uppercase tracking-[0.5em] mb-8 text-[10px]">Operator Status: Fully Verified</p>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="glass p-4 text-center">
-                        <p className="text-[10px] font-black text-slate-500 uppercase mb-1">Credits</p>
+                      <div className="glass p-4 text-center bg-slate-950/30">
+                        <p className="text-[10px] font-black text-slate-500 uppercase mb-1 tracking-widest">Available Credits</p>
                         <p className="text-2xl font-black text-yellow-500">🪙 {user.coins}</p>
                       </div>
-                      <div className="glass p-4 text-center">
-                        <p className="text-[10px] font-black text-slate-500 uppercase mb-1">XP Points</p>
+                      <div className="glass p-4 text-center bg-slate-950/30">
+                        <p className="text-[10px] font-black text-slate-500 uppercase mb-1 tracking-widest">Global XP Score</p>
                         <p className="text-2xl font-black text-blue-500">{user.xp}</p>
                       </div>
                     </div>
@@ -411,10 +421,10 @@ const App = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="glass p-8 space-y-6">
-                    <h3 className="text-lg font-black uppercase flex items-center gap-2"><Settings size={18} className="text-slate-500" /> NODE SETTINGS</h3>
+                    <h3 className="text-lg font-black uppercase flex items-center gap-2"><Settings size={18} className="text-slate-500" /> HUB PROTOCOLS</h3>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <label className="text-sm font-bold text-slate-400">Atmospheric FX</label>
+                        <label className="text-sm font-bold text-slate-400">Environment FX</label>
                         <select 
                           value={season} 
                           onChange={(e) => {
@@ -422,16 +432,20 @@ const App = () => {
                             setSeason(val);
                             (window as any).MegaHub?.updateSetting('season', val);
                           }}
-                          className="glass p-2 bg-transparent text-xs outline-none border-slate-700"
+                          className="glass p-2 bg-slate-900/50 text-xs outline-none border-slate-700 font-bold"
                         >
                           <option value="stars">STARS</option>
                           <option value="rain">RAIN</option>
                           <option value="snow">SNOW</option>
-                          <option value="off">NONE</option>
+                          <option value="off">OFF</option>
                         </select>
                       </div>
-                      <button onClick={() => { localStorage.clear(); location.reload(); }} className="btn btn-accent w-full text-xs font-black">SYSTEM REBOOT (RESET)</button>
+                      <button onClick={() => { localStorage.clear(); location.reload(); }} className="btn btn-accent w-full text-xs font-black py-4 transition-all hover:bg-cyan-400">FACTORY RESET NETWORK</button>
                     </div>
+                  </div>
+                  <div className="glass p-8 flex flex-col items-center justify-center text-center opacity-40">
+                     <p className="text-xs text-slate-500 italic uppercase tracking-widest font-black">Advanced Panel Locked</p>
+                     <p className="text-[10px] mt-2">Requires Level 5 Node Permission</p>
                   </div>
                 </div>
               </motion.div>
@@ -440,18 +454,18 @@ const App = () => {
             {view === 'arcade' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="arcade" className="space-y-10">
                 <div className="text-center">
-                  <h1 className="text-5xl font-black mb-2">ARCADE HUB</h1>
-                  <p className="text-slate-500 font-black uppercase tracking-widest text-xs">Single Node Training</p>
+                  <h1 className="text-5xl font-black mb-2 uppercase tracking-tighter">Arcade Hub</h1>
+                  <p className="text-slate-500 font-black uppercase tracking-[0.4em] text-[10px]">Independent Node Training Modules</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {GAMES.map(g => (
-                    <div key={g.id} className="card glass p-8 text-center hover:scale-105 transition-all group cursor-pointer" onClick={joinQuick}>
-                      <div className={`w-16 h-16 mx-auto rounded-2xl bg-slate-900 flex items-center justify-center ${g.color} mb-6 border border-white/5`}>
+                    <div key={g.id} className="card glass p-8 text-center hover:scale-[1.03] transition-all group cursor-pointer bg-slate-900/20" onClick={joinQuick}>
+                      <div className={`w-16 h-16 mx-auto rounded-2xl bg-slate-900 flex items-center justify-center ${g.color} mb-6 border border-white/5 shadow-inner`}>
                         <g.icon size={32} />
                       </div>
-                      <h3 className="text-xl font-black mb-2 uppercase">{g.name}</h3>
-                      <p className="text-slate-500 text-xs mb-8 font-medium leading-relaxed">{g.desc}</p>
-                      <button className="btn btn-primary w-full text-xs">INITIATE</button>
+                      <h3 className="text-xl font-black mb-2 uppercase tracking-tighter">{g.name}</h3>
+                      <p className="text-slate-500 text-xs mb-8 font-medium leading-relaxed px-4">{g.desc}</p>
+                      <button className="btn btn-primary w-full text-xs py-3 font-black">INITIATE NODE</button>
                     </div>
                   ))}
                 </div>
@@ -461,13 +475,12 @@ const App = () => {
         </main>
       </div>
 
-      {/* MOBILE BOTTOM NAV */}
-      <nav className="fixed bottom-0 w-full glass z-[2000] border-t border-white/10 h-[72px] flex justify-around items-center px-4">
+      <nav className="fixed bottom-0 w-full glass z-[2000] border-t border-white/10 h-[72px] flex justify-around items-center px-4 bg-slate-950/80">
         {[
           { id: 'dashboard', icon: Layout, label: 'Hub' },
           { id: 'arena', icon: Globe, label: 'Arena' },
           { id: 'arcade', icon: Gamepad2, label: 'Arcade' },
-          { id: 'shop', icon: ShoppingCart, label: 'Shop' },
+          { id: 'shop', icon: ShoppingCart, label: 'Market' },
           { id: 'profile', icon: User, label: 'User' }
         ].map(link => (
           <button 
@@ -484,25 +497,28 @@ const App = () => {
   );
 };
 
-// --- ROBUST INITIALIZATION ---
-const initApp = () => {
+// --- RELIABLE MOUNTING ---
+const mountApplication = () => {
   const container = document.getElementById('root');
   if (container) {
     try {
       const root = createRoot(container);
       root.render(<App />);
-      console.log("%cMEGAHUB NETWORKS %cONLINE", "color: #3b82f6; font-weight: 900; font-size: 20px;", "color: #10b981; font-weight: 900; font-size: 20px;");
+      console.log("%c[APP] VDOM Rendering Initiated", "color: #10b981; font-weight: 800;");
     } catch (err) {
-      console.error("Critical React Mount Error:", err);
+      console.error("[FATAL] React Render Failed:", err);
+      // Attempt emergency loader removal
+      const loader = document.getElementById('system-loader');
+      if (loader) loader.remove();
     }
   } else {
-    console.error("Fatal Error: Root target #root missing in DOM.");
+    console.error("[FATAL] Application Root Missing");
   }
 };
 
-// Handle ES module defer timing correctly
-if (document.readyState === 'loading') {
-  window.addEventListener('DOMContentLoaded', initApp);
+// Use cross-compatible load detection
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  mountApplication();
 } else {
-  initApp();
+  window.addEventListener('load', mountApplication);
 }
