@@ -5,21 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MEGAHUB NETWORKS | Coming Soon</title>
-    <!-- Pre-shim process for libraries that expect a Node-like environment -->
     <script>
-      window.process = {
-        env: {
-          NODE_ENV: 'production',
-          API_KEY: ''
-        }
-      };
-      var process = window.process;
-      
-      // Global error listener to help debug black screen issues
-      window.onerror = function(msg, url, lineNo, columnNo, error) {
-        console.error('CRITICAL ERROR: ', msg, ' at ', url, ':', lineNo);
-        return false;
-      };
+      // Shim for libraries expecting process.env
+      window.process = { env: { NODE_ENV: 'production', API_KEY: '' } };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,20 +33,20 @@
             animation: pulse-slow 8s infinite ease-in-out;
         }
         #root:empty::before {
-            content: 'INITIALIZING MEGAHUB NETWORKS...';
+            content: 'LOADING MEGAHUB...';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 0.5em;
-            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            font-size: 0.7rem;
             color: #334155;
-            animation: pulse 2s infinite;
+            animation: pulse-text 1.5s infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.2; }
         }
     </style>
     <script type="importmap">

@@ -1,38 +1,26 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-const mountApp = () => {
-  try {
-    const rootElement = document.getElementById('root');
-    if (!rootElement) {
-      throw new Error("Root element '#root' not found in DOM.");
-    }
+const container = document.getElementById('root');
 
-    const root = ReactDOM.createRoot(rootElement);
+if (container) {
+  try {
+    const root = createRoot(container);
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
-    console.log("MEGAHUB: Application mounted successfully.");
+    console.log("MEGAHUB: App Mounted");
   } catch (err) {
-    console.error("MEGAHUB MOUNT ERROR:", err);
-    const rootElement = document.getElementById('root');
-    if (rootElement) {
-      rootElement.innerHTML = `<div style="color: white; padding: 20px; font-family: sans-serif; text-align: center;">
-        <h1 style="color: #ef4444;">Initialization Failed</h1>
-        <p style="color: #94a3b8;">The application could not be started. Check console for details.</p>
-        <code style="display: block; background: #0f172a; padding: 10px; margin-top: 10px; font-size: 12px;">${err instanceof Error ? err.message : String(err)}</code>
-      </div>`;
-    }
+    console.error("MEGAHUB: Mounting Error", err);
+    container.innerHTML = `<div style="color:white;text-align:center;padding:50px;font-family:sans-serif;">
+      <h2 style="color:#f87171">Initialization Failed</h2>
+      <p style="color:#94a3b8">${err instanceof Error ? err.message : 'Check console for details'}</p>
+    </div>`;
   }
-};
-
-// Ensure DOM is ready before mounting
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', mountApp);
 } else {
-  mountApp();
+  console.error("MEGAHUB: Target container not found");
 }
