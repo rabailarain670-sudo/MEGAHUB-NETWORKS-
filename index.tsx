@@ -209,7 +209,7 @@ const App = () => {
       <WeatherSystem type={season} />
       
       {/* GLOBAL HEADER */}
-      <header className="fixed top-0 w-full z-[1000] glass px-6 h-[72px] flex justify-between items-center">
+      <header className="fixed top-[66px] w-full z-[1000] glass px-6 h-[72px] flex justify-between items-center">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setView('dashboard'); setRoom(null); }}>
           <div className="p-1.5 bg-blue-500 rounded-lg shadow-lg shadow-blue-500/30"><Zap size={20} fill="white" stroke="white" /></div>
           <span className="megahub-branding text-2xl font-black tracking-tighter">MEGAHUB</span>
@@ -225,12 +225,7 @@ const App = () => {
         </div>
       </header>
 
-      <div className="content-wrapper">
-        {/* LEFT RAIL */}
-        <aside className="side-ad-rail">
-          <AdUnit type="160x600" height={600} width={160} />
-        </aside>
-
+      <div className="content-wrapper pt-[148px]">
         {/* MAIN BODY */}
         <main className="main-content">
           <AnimatePresence mode="wait">
@@ -291,8 +286,6 @@ const App = () => {
                         ))}
                       </div>
                     </div>
-                    
-                    <AdUnit type="300x250" height={250} width={280} />
                   </aside>
                 </div>
               </motion.div>
@@ -348,7 +341,6 @@ const App = () => {
                           </div>
                         ))}
                       </div>
-                      <AdUnit type="Native" height={200} width={280} />
                     </aside>
                   </div>
                 )}
@@ -439,7 +431,7 @@ const App = () => {
                     </div>
                   </div>
                   <div className="glass p-8 flex flex-col items-center justify-center text-center">
-                     <AdUnit type="300x250" height={250} width={300} />
+                     <p className="text-xs text-slate-600 italic">Advanced Configuration Panel</p>
                   </div>
                 </div>
               </motion.div>
@@ -467,11 +459,6 @@ const App = () => {
             )}
           </AnimatePresence>
         </main>
-
-        {/* RIGHT RAIL */}
-        <aside className="side-ad-rail">
-          <AdUnit type="160x600" height={600} width={160} />
-        </aside>
       </div>
 
       {/* MOBILE BOTTOM NAV */}

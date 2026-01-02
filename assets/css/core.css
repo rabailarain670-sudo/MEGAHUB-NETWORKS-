@@ -24,7 +24,7 @@ body {
   line-height: 1.5;
 }
 
-/* Dedicated Ad Spaces - Guaranteed no overlap */
+/* Dedicated Layout Management */
 .app-shell {
   display: flex;
   flex-direction: column;
@@ -35,19 +35,8 @@ body {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding-top: 72px; /* Header */
+  padding-top: 138px; /* Accounts for Top Ad (66px) + Header (72px) */
   padding-bottom: 80px; /* Footer Nav */
-}
-
-.side-ad-rail {
-  width: 160px;
-  flex-shrink: 0;
-  padding: 10px;
-  display: none;
-}
-
-@media (min-width: 1440px) {
-  .side-ad-rail { display: block; }
 }
 
 .main-content {
