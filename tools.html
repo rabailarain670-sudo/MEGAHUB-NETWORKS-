@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Hub | Tools</title>
+    <link rel="stylesheet" href="assets/css/core.css">
+    <link rel="stylesheet" href="assets/css/ads.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <header class="glass"><div class="logo" onclick="location.href='index.html'"><span>MEGA HUB</span></div></header>
+    <main>
+        <h1 class="section-title">UTILITY TOOLS</h1>
+        <div class="glass" style="padding:40px; max-width:400px; margin:0 auto">
+            <h3 style="margin-bottom:20px">QUICK CALCULATOR</h3>
+            <input type="text" id="calc-display" class="glass" readonly style="width:100%; text-align:right; font-size:2rem; padding:15px; margin-bottom:10px; color:white">
+            <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px">
+                <button class="btn glass" onclick="Calc.add('7')">7</button><button class="btn glass" onclick="Calc.add('8')">8</button><button class="btn glass" onclick="Calc.add('9')">9</button><button class="btn btn-secondary" onclick="Calc.add('/')">/</button>
+                <button class="btn glass" onclick="Calc.add('4')">4</button><button class="btn glass" onclick="Calc.add('5')">5</button><button class="btn glass" onclick="Calc.add('6')">6</button><button class="btn btn-secondary" onclick="Calc.add('*')">*</button>
+                <button class="btn glass" onclick="Calc.add('1')">1</button><button class="btn glass" onclick="Calc.add('2')">2</button><button class="btn glass" onclick="Calc.add('3')">3</button><button class="btn btn-secondary" onclick="Calc.add('-')">-</button>
+                <button class="btn btn-secondary" onclick="Calc.clear()">C</button><button class="btn glass" onclick="Calc.add('0')">0</button><button class="btn btn-primary" onclick="Calc.exec()">=</button><button class="btn btn-secondary" onclick="Calc.add('+')">+</button>
+            </div>
+        </div>
+        <div class="ad-placeholder" data-type="native" data-ad-level="1" style="margin-top:40px"></div>
+    </main>
+    <script src="assets/js/core.js" defer></script>
+    <script>
+        const Calc = {
+            buf: '',
+            add(v) { this.buf += v; this.update(); if(window.Sound) Sound.playLightClick(); },
+            clear() { this.buf = ''; this.update(); },
+            update() { document.getElementById('calc-display').value = this.buf; },
+            exec() {
+              try { this.buf = eval(this.buf).toString(); this.update(); if(window.Sound) Sound.playCorrect(); }
+              catch(e) { this.buf = 'ERROR'; this.update(); if(window.Sound) Sound.playWrong(); }
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Hub | Story Engine</title>
+    <link rel="stylesheet" href="assets/css/core.css">
+    <link rel="stylesheet" href="assets/css/ads.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <header class="glass">
+        <div class="logo" onclick="location.href='index.html'"><span>MEGA HUB</span></div>
+    </header>
+    <main>
+        <h1 class="section-title">STORY ENGINE</h1>
+        <div id="story-setup" class="glass" style="padding:30px">
+            <h3 style="margin-bottom:20px">CHOOSE GENRE</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:12px">
+                <button class="btn glass" onclick="Story.start('Sci-Fi')">SCI-FI</button>
+                <button class="btn glass" onclick="Story.start('Fantasy')">FANTASY</button>
+                <button class="btn glass" onclick="Story.start('Horror')">HORROR</button>
+                <button class="btn glass" onclick="Story.start('Mystery')">MYSTERY</button>
+            </div>
+        </div>
+        <div id="story-display" class="glass" style="display:none; padding:40px; margin-top:20px">
+            <h2 id="story-title" style="color:var(--primary); margin-bottom:20px"></h2>
+            <div id="story-text" style="font-size:1.2rem; line-height:1.8; color:#cbd5e1"></div>
+            <button class="btn btn-primary" style="margin-top:40px" onclick="Story.next()">CONTINUE CHAPTER</button>
+        </div>
+        <div class="ad-placeholder" data-type="native" data-ad-level="1"></div>
+    </main>
+    <script src="assets/js/core.js" defer></script>
+    <script>
+        const Story = {
+            genre: '', chapter: 1,
+            start(g) {
+                this.genre = g; this.chapter = 1;
+                document.getElementById('story-setup').style.display = 'none';
+                document.getElementById('story-display').style.display = 'block';
+                document.getElementById('story-title').textContent = `${this.genre} Saga: Part I`;
+                this.render();
+            },
+            render() {
+                const texts = [
+                  "The horizon flickered with the dying light of a thousand binary stars. In the distance, the megastructures hummed with ancient electricity, waiting for a key that had been lost for aeons.",
+                  "A silent vibration shook the floorplates beneath the protagonist's feet. It wasn't an earthquake, but the sound of something waking up—something that had been buried long before the first city was built.",
+                  "The air grew thick with static. Every metal surface began to glow with a faint blue luminescence. The journey had truly begun, and there was no turning back to the safety of the dome."
+                ];
+                document.getElementById('story-text').textContent = texts[this.chapter-1] || "The end of this particular saga... for now.";
+            },
+            next() {
+                this.chapter++; this.render();
+                if (window.Sound) Sound.playBeep();
+            }
+        };
+    </script>
+</body>
+</html>

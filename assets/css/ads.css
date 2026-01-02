@@ -1,0 +1,50 @@
+.ad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  overflow: hidden;
+  background: rgba(0,0,0,0.1);
+  min-height: 50px;
+}
+
+.ad-container::before {
+  content: 'SPONSORED';
+  font-size: 0.6rem;
+  color: #64748b;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.ad-rail-desktop {
+  position: fixed;
+  right: 20px;
+  top: 80px;
+  width: 160px;
+  height: 600px;
+  display: none;
+}
+
+@media (min-width: 1600px) {
+  .ad-rail-desktop { display: block; }
+}
+
+.mobile-sticky-ad {
+  position: fixed;
+  bottom: 64px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: var(--bg-dark);
+  z-index: 999;
+  border-top: 1px solid var(--glass-border);
+}
+
+.ad-300x250 { width: 300px; height: 250px; }
+.ad-728x90 { width: 728px; height: 90px; }
+.ad-160x600 { width: 160px; height: 600px; }
+.ad-468x60 { width: 468px; height: 60px; }
+.ad-320x50 { width: 320px; height: 50px; }

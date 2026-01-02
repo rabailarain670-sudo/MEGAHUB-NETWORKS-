@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Hub | Profile & Settings</title>
+    <link rel="stylesheet" href="assets/css/core.css">
+    <link rel="stylesheet" href="assets/css/ads.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <header class="glass">
+        <div class="logo" onclick="location.href='index.html'"><span>MEGA HUB</span></div>
+    </header>
+    <main>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:40px">
+            <section>
+                <h2 class="section-title">USER PROFILE</h2>
+                <div class="glass" style="padding:30px; display:flex; flex-direction:column; align-items:center; gap:20px">
+                    <div id="avatar-preview" style="width:150px; height:150px; background:#1e293b; border-radius:50%; border:4px solid var(--primary); overflow:hidden"></div>
+                    <div style="width:100%">
+                        <label style="font-size:0.8rem; color:#64748b">NICKNAME</label>
+                        <input type="text" id="nickname-input" class="glass" style="width:100%; padding:12px; margin-top:4px; outline:none; color:white">
+                    </div>
+                    <button class="btn btn-primary" onclick="Profile.saveName()" style="width:100%">SAVE IDENTITY</button>
+                </div>
+
+                <div class="glass" style="margin-top:20px; padding:20px">
+                    <h3 style="margin-bottom:15px">AVATAR LAB</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                        <button class="btn glass" onclick="Profile.changePart('head')">HEAD</button>
+                        <button class="btn glass" onclick="Profile.changePart('eyes')">EYES</button>
+                        <button class="btn glass" onclick="Profile.changePart('mouth')">MOUTH</button>
+                        <button class="btn glass" onclick="Profile.changePart('hair')">HAIR</button>
+                    </div>
+                    <button class="btn btn-secondary" style="width:100%; margin-top:10px" onclick="Profile.randomize()">RANDOMIZE</button>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">SYSTEM SETTINGS</h2>
+                <div class="glass" style="padding:30px; display:flex; flex-direction:column; gap:24px">
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <div>
+                            <div style="font-weight:bold">Sound Effects</div>
+                            <div style="font-size:0.8rem; color:#64748b">UI and game sounds</div>
+                        </div>
+                        <input type="checkbox" id="set-sound" onchange="Profile.updateSetting('sound', this.checked)">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <div>
+                            <div style="font-weight:bold">Volume</div>
+                            <div id="vol-val" style="font-size:0.8rem; color:var(--primary)">50%</div>
+                        </div>
+                        <input type="range" min="0" max="100" id="set-volume" oninput="Profile.updateSetting('volume', this.value)">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <div>
+                            <div style="font-weight:bold">Theme</div>
+                            <div style="font-size:0.8rem; color:#64748b">Dark or Light interface</div>
+                        </div>
+                        <select id="set-theme" class="glass" onchange="Profile.updateSetting('theme', this.value)" style="padding:8px">
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <div>
+                            <div style="font-weight:bold">Environment</div>
+                            <div style="font-size:0.8rem; color:#64748b">Background season effects</div>
+                        </div>
+                        <select id="set-season" class="glass" onchange="Profile.updateSetting('season', this.value)" style="padding:8px">
+                            <option value="stars">Stars</option>
+                            <option value="rain">Rain</option>
+                            <option value="snow">Snow</option>
+                            <option value="off">Off</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary" style="margin-top:20px" onclick="localStorage.clear(); location.reload()">FACTORY RESET</button>
+                </div>
+            </section>
+        </div>
+    </main>
+    <script src="assets/js/core.js" defer></script>
+    <script src="assets/js/profile.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Hub | The Arena</title>
+    <link rel="stylesheet" href="assets/css/core.css">
+    <link rel="stylesheet" href="assets/css/ads.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <canvas id="weather-canvas"></canvas>
+
+    <header class="glass">
+        <div class="logo" onclick="location.href='index.html'">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="2" y="2" width="20" height="20" rx="4"/><path d="M7 12h10M12 7v10"/></svg>
+            <span>MEGA HUB</span>
+        </div>
+        <div class="profile-chip glass" onclick="location.href='profile.html'">
+            <div class="avatar-mini"></div>
+            <span class="user-nickname">Gamer</span>
+        </div>
+    </header>
+
+    <main>
+        <div id="arena-lobby">
+            <h1 class="section-title"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color:var(--accent)"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> THE ARENA</h1>
+            
+            <div class="grid-layout">
+                <div class="glass" style="padding:24px; display:flex; flex-direction:column; gap:16px">
+                    <h3>CREATE ROOM</h3>
+                    <p style="font-size:0.9rem; color:#94a3b8">Host your own room and invite friends to compete in word games.</p>
+                    <button class="btn btn-primary" onclick="Arena.createRoom()">CREATE NEW LOBBY</button>
+                </div>
+                <div class="glass" style="padding:24px; display:flex; flex-direction:column; gap:16px">
+                    <h3>JOIN ROOM</h3>
+                    <p style="font-size:0.9rem; color:#94a3b8">Enter a room code to join an existing game lobby.</p>
+                    <div style="display:flex; gap:8px">
+                        <input type="text" id="room-code-input" class="glass" placeholder="CODE" style="width:100px; padding:8px; outline:none; color:white">
+                        <button class="btn btn-secondary" onclick="Arena.joinRoom()">JOIN</button>
+                    </div>
+                </div>
+                <div class="glass" style="padding:24px; display:flex; flex-direction:column; gap:16px">
+                    <h3>QUICK PLAY</h3>
+                    <p style="font-size:0.9rem; color:#94a3b8">Matchmaking with random players currently in the lobby.</p>
+                    <button class="btn btn-secondary" onclick="Arena.quickPlay()">FIND MATCH</button>
+                </div>
+            </div>
+
+            <div class="ad-placeholder" data-type="300x250" data-ad-level="1"></div>
+        </div>
+
+        <div id="room-view" style="display:none">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+                <h1 class="section-title" style="margin-bottom:0">ROOM: <span id="display-room-code" style="color:var(--primary)">CODE</span></h1>
+                <button class="btn glass" onclick="location.reload()">LEAVE</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 300px; gap:20px">
+                <div class="glass" style="padding:40px; min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center">
+                    <div id="match-status" style="font-size:1.5rem; font-weight:bold; margin-bottom:20px">WAITING FOR PLAYERS...</div>
+                    <div id="room-actions">
+                        <button class="btn btn-primary" onclick="Arena.shareRoom()">SHARE LINK</button>
+                    </div>
+                    <div id="arena-game-area" style="display:none; width:100%">
+                        <!-- Game content -->
+                    </div>
+                </div>
+
+                <div class="glass" style="padding:15px; display:flex; flex-direction:column">
+                    <h4 style="margin-bottom:15px">PLAYERS (1/10)</h4>
+                    <div id="player-list" style="display:flex; flex-direction:column; gap:8px; flex:1">
+                        <div style="display:flex; align-items:center; gap:8px">
+                            <div class="avatar-mini" style="width:24px; height:24px"></div>
+                            <span class="user-nickname">YOU (HOST)</span>
+                        </div>
+                    </div>
+                    <div class="ad-placeholder" data-type="300x250" data-ad-level="2"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/core.js" defer></script>
+    <script src="assets/js/arena.js" defer></script>
+    <script src="assets/js/ads.js" defer></script>
+</body>
+</html>
